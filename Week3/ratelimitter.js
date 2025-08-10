@@ -1,4 +1,5 @@
 const express= require("express");
+const { userInfo } = require("os");
 const app = express();
 const port = 3000;
 app.use(express.json());
@@ -10,11 +11,37 @@ app.use(express.json());
 // User will be sending in their user id in the header as 'user-id'
 // You have been given a numberOfRequestsForUser object to start off with which
 // clears every one second
-app.use(function(req,res,next){
 
-})
 
 let numberOfRequestsForUser = {};
 setInterval(()=>{
     numberOfRequestsForUser={};
 },1000);    
+
+app.use(function(req,res,next){
+    const userid=req.headers['user-id'];
+    if (numberOfRequestsForUser[userid]){
+        numberOfRequestsForUser[userid]++;
+        if (numberOfRequestsForUser[userid]>5){
+            return res.status(404).json({msg:"Too many requests"});
+        }else{
+        next();
+    }
+    }else{
+        numberOfRequestsForUser[userid]=1;
+        next();
+    }
+
+})
+
+app.get('/user', function(req, res) {
+  res.status(200).json({ name: 'john' });
+});
+
+app.post('/user', function(req, res) {
+  res.status(200).json({ msg: 'created dummy user' });
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
