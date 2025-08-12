@@ -7,7 +7,6 @@ const credentialsSchema = z.object({
 });
 const app= require('express')();
 app.use(require('express').json());
-
 /**
  * Generates a JWT for a given username and password.
  *
@@ -56,6 +55,37 @@ function decodeJwt(token) {
     return decoded || false;
 }
 
+// Minimal demo routes
+app.post('/sign', (req, res) => {
+  const { username, password } = req.body || {};
+  const token = signJwt(username, password);
+  if (!token) return res.status(400).json({ msg: 'Invalid credentials' });
+  res.json({ token });
+});
+
+app.post('/verify', (req, res) => {
+  const { token } = req.body || {};
+  res.json({ valid: verifyJwt(token) });
+});
+
+app.post('/decode', (req, res) => {
+  const { token } = req.body || {};
+  const payload = decodeJwt(token);
+  if (!payload) return res.status(400).json({ msg: 'Invalid token' });
+  res.json({ payload });
+});
+
 app.listen(3000, () => {
     console.log('Server listening on port 3000');
 });
+
+
+/*athulkrishnagopakumar@Athulkrishnas-MacBook-Air 100xCohort2 % curl -s -X POST http://localhost:3000/sign -H 'Content-Type: application/json' -d '{"username":"a@b.com","password":"secret12"}'
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFAYi5jb20iLCJpYXQiOjE3NTQ5NzIyNTgsImV4cCI6MTc1NDk3NTg1OH0.H8A2xE3MrBomU7Aisk0_SyWPWGYI-6RmgjYG4KT1bZ4"}%                                                                                                                                     
+athulkrishnagopakumar@Athulkrishnas-MacBook-Air 100xCohort2 % curl -s -X POST http://localhost:3000/verify -H 'Content-Type: application/json' -d '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFAYi5jb20iLCJpYXQiOjE3NTQ5NzIyNTgsImV4cCI6MTc1NDk3NTg1OH0.H8A2xE3MrBomU7Aisk0_SyWPWGYI-6RmgjYG4KT1bZ4"}'
+{"valid":true}%                                                                                                                                        
+athulkrishnagopakumar@Athulkrishnas-MacBook-Air 100xCohort2 % Decode: curl -s -X POST http://localhost:3000/decode -H 'Content-Type: application/json' -d '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFAYi5jb20iLCJpYXQiOjE3NTQ5NzIyNTgsImV4cCI6MTc1NDk3NTg1OH0.H8A2xE3MrBomU7Aisk0_SyWPWGYI-6RmgjYG4KT1bZ4"}'
+zsh: command not found: Decode:
+athulkrishnagopakumar@Athulkrishnas-MacBook-Air 100xCohort2 % curl -s -X POST http://localhost:3000/decode -H 'Content-Type: application/json' -d '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFAYi5jb20iLCJpYXQiOjE3NTQ5NzIyNTgsImV4cCI6MTc1NDk3NTg1OH0.H8A2xE3MrBomU7Aisk0_SyWPWGYI-6RmgjYG4KT1bZ4"}'
+{"payload":{"username":"a@b.com","iat":1754972258,"exp":1754975858}}%                                                                                  
+athulkrishnagopakumar@Athulkrishnas-MacBook-Air 100xCohort2 */
