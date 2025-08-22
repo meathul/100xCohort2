@@ -8,14 +8,14 @@ function App(){
   }
   return(
     <div>
-      <button onClick={buttonHandler}>Counter {count}</button>
+      <CustomButton count={count} setCount={setCount}></CustomButton>
     </div>
   )
 }
 //component
 function CustomButton(props){
   function onclickHandler(){
-    props.setCount(count+1);
+    props.setCount(props.count+1);
   }
   return <button onClick={onclickHandler}>counter{props.count}</button>
 }
