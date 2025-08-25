@@ -1,8 +1,8 @@
 const { createTodo } = require("./types");
-const{updateTodo} = require("./types");
-const { todo }= require("./db");
-const express= require(express);
-const bodyparser= require(bodyparser);
+const { updateTodo } = require("./types");
+const zod = require("zod");
+const { todo } = require("./db");
+const express = require("express");
 const app = express();
 const PORT=3000;
 app.use(express.json());
