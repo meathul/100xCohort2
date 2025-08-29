@@ -1,11 +1,13 @@
 const { createTodo } = require("./types");
 const { updateTodo } = require("./types");
+const cors =  require("cors")
 const zod = require("zod");
 const { todo } = require("./db");
 const express = require("express");
 const app = express();
 const PORT=3000;
 app.use(express.json());
+app.use(cors()); 
 app.post("/todo",async function(req,res){
     const createPayload=req.body;
     const parsedPayload=createTodo.safeParse(createPayload);
